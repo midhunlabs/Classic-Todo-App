@@ -1,0 +1,887 @@
+@import url('https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap');
+
+:root {
+  --pad-bg: #fdf6e3;
+  --line-color: #93a1b5;
+  --margin-color: #d9534f;
+  --text-color: #2c3e50;
+  --desk-bg: #1e2832;
+  --binding-color: #8c1c13;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body, html, #root {
+  height: 100%;
+}
+
+body {
+  font-family: 'Playfair Display', serif;
+  background-color: var(--desk-bg);
+  background-image: 
+    linear-gradient(45deg, #151c24 25%, transparent 25%, transparent 75%, #151c24 75%, #151c24), 
+    linear-gradient(-45deg, #151c24 25%, transparent 25%, transparent 75%, #151c24 75%, #151c24);
+  background-size: 40px 40px;
+  background-position: 0 0, 20px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* Changed to flex-start so it can scroll naturally */
+  color: var(--text-color);
+  overflow-y: auto;
+}
+
+#root {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* Changed to flex-start */
+  width: 100%;
+  padding: 60px 20px; /* added top padding so notebook isn't flush with top when scrolling */
+}
+
+.desk-container {
+  width: 100%;
+  max-width: 750px;
+  filter: drop-shadow(0 20px 30px rgba(0,0,0,0.5));
+  /* removed perspective here since it causes layout glitches with infinite scrolling in flex sometimes */
+}
+
+.pad-wrapper {
+  background: var(--pad-bg);
+  border-radius: 6px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 
+    inset 0 0 40px rgba(0,0,0,0.05),
+    0 5px 15px rgba(0,0,0,0.3);
+  transform: rotate(-5deg);
+  transform-origin: center center;
+  transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.pad-wrapper:hover {
+  transform: rotate(0deg);
+}
+
+.pad-binding {
+  height: 45px;
+  background: var(--binding-color);
+  background-image: linear-gradient(to bottom, #7d150e, #8c1c13, #a2241a);
+  border-bottom: 2px solid #5a0e08;
+  position: relative;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0 50px;
+}
+
+.pad-binding::before, .pad-binding::after {
+  content: '';
+  width: 20px;
+  height: 6px;
+  background: silver;
+  border-radius: 3px;
+  box-shadow: 0 2px 3px rgba(0,0,0,0.5), inset 0 1px 1px white;
+}
+
+.legal-pad {
+  padding-bottom: 80px;
+  background-image: 
+    linear-gradient(90deg, transparent 119px, var(--margin-color) 119px, var(--margin-color) 121px, transparent 121px),
+    linear-gradient(var(--line-color) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 48px;
+  background-position: 0 0, 0 12px;
+  min-height: 700px;
+  position: relative;
+}
+
+.pad-header {
+  padding: 40px 30px 25px 140px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  background: var(--pad-bg);
+  border-bottom: 1px solid var(--line-color);
+  margin-bottom: 15px;
+}
+
+.pad-title-container {
+  display: flex;
+  align-items: baseline;
+  gap: 15px;
+  margin: 0 0 12px 0;
+}
+
+.pad-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 3rem;
+  letter-spacing: -1px;
+  font-weight: 700;
+  color: #1a252f;
+  margin: 0;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.pad-title:hover {
+  color: #5b9bd5;
+}
+
+.edit-title-btn {
+  background: transparent;
+  border: none;
+  color: #c9c9c9;
+  font-size: 1.8rem;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s, color 0.2s;
+  padding: 0;
+  transform: translateY(-5px);
+}
+
+.pad-title-container:hover .edit-title-btn {
+  opacity: 1;
+}
+
+.edit-title-btn:hover {
+  color: #5b9bd5;
+}
+
+.pad-title-input {
+  font-family: 'Playfair Display', serif;
+  font-size: 3rem;
+  letter-spacing: -1px;
+  font-weight: 700;
+  color: #1a252f;
+  text-transform: uppercase;
+  background: transparent;
+  border: 1px dashed #aaa;
+  border-radius: 4px;
+  outline: none;
+  margin: 0 0 12px 0;
+  width: 100%;
+}
+
+.header-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.date-field {
+  font-family: 'Kalam', cursive;
+  font-size: 1.4rem;
+  color: #666;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px dashed #aaa;
+  padding-bottom: 3px;
+}
+
+.day-nav-btn {
+  background: transparent;
+  border: none;
+  color: #999;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0 2px;
+  line-height: 1;
+  transition: color 0.2s, transform 0.1s;
+}
+
+.day-nav-btn:hover {
+  color: #333;
+  transform: scale(1.1);
+}
+
+.today-btn {
+  background: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-family: 'Kalam', cursive;
+  font-size: 1.1rem;
+  cursor: pointer;
+  color: #666;
+  transition: all 0.2s;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.today-btn:hover {
+  background: #e2e2e2;
+  color: #000;
+  border-color: #bbb;
+}
+
+.completed-counter {
+  font-family: 'Kalam', cursive;
+  font-size: 1.8rem;
+  color: #444;
+  background: rgba(0,0,0,0.03);
+  padding: 4px 12px;
+  border-radius: 6px;
+  border: 1px dashed var(--line-color);
+  display: flex;
+  align-items: center;
+}
+
+.counter-icon {
+  color: var(--margin-color);
+  margin-right: 8px;
+  font-size: 2.2rem;
+  line-height: 0.8;
+}
+
+.pad-content {
+  padding: 0 30px 0 140px;
+}
+
+.todo-list {
+  list-style: none;
+}
+
+.todo-item {
+  display: flex;
+  align-items: flex-start;
+  min-height: 48px;
+  position: relative;
+}
+
+.checkbox-container {
+  display: inline-block;
+  position: relative;
+  cursor: pointer;
+  margin-right: 20px;
+  font-size: 26px;
+  user-select: none;
+  width: 24px;
+  height: 24px;
+  margin-top: 12px;
+}
+
+.checkbox-container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 24px;
+  width: 24px;
+  border: 2px solid var(--text-color);
+  border-radius: 4px;
+  background-color: transparent;
+  transition: all 0.2s ease;
+}
+
+.checkbox-container input:checked ~ .checkmark {
+  background-color: var(--text-color);
+}
+
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+.checkbox-container input:checked ~ .checkmark:after {
+  display: block;
+}
+
+.checkbox-container .checkmark:after {
+  left: 7px;
+  top: 2px;
+  width: 6px;
+  height: 12px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.todo-text {
+  font-family: 'Kalam', cursive;
+  font-size: 2.2rem;
+  line-height: 48px;
+  flex-grow: 1;
+  min-width: 0;
+  transition: all 0.2s;
+  cursor: pointer;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+.todo-item.completed .todo-text {
+  text-decoration: line-through;
+  color: #888;
+  opacity: 0.7;
+}
+
+.delete-btn, .edit-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.8rem;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s, color 0.2s;
+  padding: 0 8px;
+  margin-top: 10px;
+}
+
+.delete-btn {
+  color: #c9c9c9;
+}
+
+.edit-btn {
+  color: #c9c9c9;
+  font-size: 1.6rem;
+  padding-right: 4px;
+}
+
+.todo-item:hover .delete-btn, .todo-item:hover .edit-btn {
+  opacity: 1;
+}
+
+.delete-btn:hover {
+  color: var(--margin-color);
+}
+
+.edit-btn:hover {
+  color: #5b9bd5;
+}
+
+.todo-input.edit-mode {
+  font-size: 2.2rem;
+  padding: 0;
+  width: 100%;
+}
+
+.add-todo-form {
+  display: flex;
+  align-items: center;
+  height: 48px;
+  margin-top: 15px;
+}
+
+.add-icon {
+  font-family: 'Kalam', cursive;
+  font-size: 2.4rem;
+  color: var(--margin-color);
+  margin-right: 20px;
+  width: 24px;
+  text-align: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.add-icon:hover {
+  transform: scale(1.1);
+  transition: transform 0.2s;
+}
+
+.todo-input {
+  flex-grow: 1;
+  background: transparent;
+  border: none;
+  font-family: 'Kalam', cursive;
+  font-size: 2.2rem;
+  color: var(--text-color);
+  outline: none;
+  height: 100%;
+}
+
+.todo-input::placeholder {
+  color: #a0a0a0;
+  font-style: italic;
+}
+
+.pad-footer {
+  position: absolute;
+  bottom: 25px;
+  right: 30px;
+}
+
+.back-to-top-btn {
+  background: transparent;
+  border: none;
+  font-family: 'Kalam', cursive;
+  font-size: 1.8rem;
+  color: #555;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.back-to-top-btn:hover {
+  color: var(--margin-color);
+}
+
+.user-profile-widget {
+  position: absolute;
+  right: 20px;
+  top: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 10;
+}
+
+.logout-btn {
+  background: transparent;
+  border: none;
+  color: #ffbaba;
+  font-size: 1.4rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: color 0.2s, transform 0.2s;
+  padding: 0;
+  line-height: 1;
+}
+
+.logout-btn:hover {
+  color: #ffffff;
+  transform: scale(1.1);
+}
+
+.profile-pic {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.4);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  object-fit: cover;
+}
+
+/* Login Page */
+.login-screen {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: auto;
+  min-height: 400px;
+  width: 100%;
+  margin-top: 10vh;
+}
+
+.login-journal {
+  background: var(--pad-bg);
+  padding: 50px 70px;
+  border-radius: 8px;
+  box-shadow: 
+    inset 0 0 40px rgba(0,0,0,0.05),
+    0 10px 25px rgba(0,0,0,0.4);
+  text-align: center;
+  border-left: 20px solid var(--binding-color);
+  position: relative;
+  max-width: 500px;
+}
+
+.login-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 3.5rem;
+  letter-spacing: -1px;
+  font-weight: 700;
+  color: #1a252f;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+}
+
+.login-subtitle {
+  font-family: 'Kalam', cursive;
+  font-size: 2rem;
+  color: #555;
+  margin-bottom: 40px;
+}
+
+.google-btn-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.google-btn {
+  background: #fff;
+  color: #444;
+  border: 1px solid #ddd;
+  padding: 12px 24px;
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem;
+  font-weight: 600;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  transition: all 0.2s;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  position: relative;
+  z-index: 2;
+}
+
+.google-btn:hover {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  transform: translateY(-2px);
+}
+
+.squirrel {
+  position: absolute;
+  top: -90px;
+  left: -45px;
+  width: 90px;
+  height: 90px;
+  z-index: 3;
+  pointer-events: none;
+  transform-origin: center bottom;
+}
+
+/* Custom Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.custom-modal {
+  background: var(--pad-bg);
+  padding: 30px 40px;
+  border-radius: 6px;
+  box-shadow: 
+    0 15px 35px rgba(0,0,0,0.5),
+    inset 0 0 40px rgba(0,0,0,0.05);
+  border-left: 20px solid var(--binding-color);
+  max-width: 400px;
+  text-align: center;
+}
+
+.modal-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 3.2rem;
+  letter-spacing: -1px;
+  font-weight: 700;
+  color: #1a252f;
+  margin-bottom: 5px;
+  text-transform: uppercase;
+}
+
+.modal-text {
+  font-family: 'Kalam', cursive;
+  font-size: 2.2rem;
+  color: #555;
+  margin-bottom: 25px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.modal-btn {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.4rem;
+  padding: 8px 24px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.cancel-btn {
+  background: #eee;
+  color: #444;
+}
+
+.cancel-btn:hover {
+  background: #ddd;
+}
+
+.confirm-btn {
+  background: var(--margin-color);
+  color: white;
+}
+
+.confirm-btn:hover {
+  background: #c9302c;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+/* Special Page Scroll 3D Layout */
+.special-desk {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.scroll-wrapper {
+  width: 90%;
+  max-width: 650px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  filter: drop-shadow(0 20px 30px rgba(0,0,0,0.6));
+}
+
+.scroll-top-roller, .scroll-bottom-roller {
+  width: 102%;
+  height: 36px;
+  background: linear-gradient(to bottom, #75441b, #c2955e 30%, #573312 80%, #75441b);
+  border-radius: 18px;
+  z-index: 5;
+  box-shadow: inset 0 -2px 5px rgba(0,0,0,0.4), 0 5px 15px rgba(0,0,0,0.6);
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.scroll-cap {
+  width: 20px;
+  height: 44px;
+  background: linear-gradient(to bottom, #a07a4a, #deb887 30%, #a07a4a 80%, #7a5c38);
+  border-radius: 10px;
+  box-shadow: inset 0 0 4px rgba(0,0,0,0.5);
+  position: absolute;
+}
+
+.left-cap {
+  left: -8px;
+}
+
+.right-cap {
+  right: -8px;
+}
+
+.scroll-top-roller {
+  margin-bottom: -12px; /* overlap with unrolling paper */
+}
+
+.scroll-bottom-roller {
+  margin-top: -12px; /* overlap with inside paper */
+}
+
+.parchment-paper {
+  width: 96%;
+  background: #f4e8d1;
+  background-image: url('https://www.transparenttextures.com/patterns/old-wall.png');
+  border-left: 1px solid #c2955e;
+  border-right: 1px solid #c2955e;
+  box-shadow: inset 0 0 60px rgba(139, 69, 19, 0.15);
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+  /* Physical unroll CSS animation */
+  height: 0;
+  animation: unroll-scroll 2.5s cubic-bezier(0.3, 1, 0.4, 1) forwards;
+  animation-delay: 0.5s; 
+}
+
+@keyframes unroll-scroll {
+  0% { height: 0; }
+  100% { height: 500px; }
+}
+
+.scroll-content {
+  width: 100%;
+  padding: 40px 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.typewriter-text {
+  font-family: 'Kalam', cursive;
+  font-size: 2.2rem;
+  color: #2f2016;
+  line-height: 1.4;
+  min-height: 220px; /* Buffer space so UI doesn't jump */
+}
+
+.continue-btn {
+  margin-top: 40px;
+  background: #75441b;
+  color: #fff;
+  border: 2px solid #573312;
+  padding: 12px 35px;
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem;
+  border-radius: 6px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+  transition: all 0.2s;
+  opacity: 0;
+}
+
+.continue-btn.fade-in {
+  animation: fade-btn 1s forwards;
+}
+
+@keyframes fade-btn {
+  to { opacity: 1; }
+}
+
+.continue-btn:hover {
+  background: #a66a33;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+}
+
+/* Mobile Responsive */
+@media (max-width: 650px) {
+  #root {
+    padding: 20px 10px;
+  }
+  
+  .legal-pad {
+    background-image: 
+      linear-gradient(90deg, transparent 59px, var(--margin-color) 59px, var(--margin-color) 61px, transparent 61px),
+      linear-gradient(var(--line-color) 1px, transparent 1px);
+    min-height: 500px;
+  }
+
+  .pad-binding {
+    padding: 0 15px;
+  }
+
+  .pad-header {
+    padding: 25px 15px 15px 75px;
+  }
+
+  .pad-content {
+    padding: 0 15px 0 75px;
+  }
+
+  .pad-title {
+    font-size: 2.2rem;
+  }
+
+  .pad-title-input {
+    font-size: 2.2rem;
+  }
+
+  .date-field {
+    font-size: 1.1rem;
+    gap: 4px;
+  }
+
+  .today-btn {
+    font-size: 0.9rem;
+    padding: 2px 6px;
+  }
+
+  .completed-counter {
+    font-size: 1.3rem;
+    padding: 4px 8px;
+  }
+
+  .counter-icon {
+    font-size: 1.6rem;
+  }
+
+  .todo-text, .todo-input.edit-mode, .todo-input {
+    font-size: 1.6rem;
+  }
+
+  .add-icon {
+    margin-right: 12px;
+    font-size: 1.8rem;
+  }
+  
+  .delete-btn, .edit-btn {
+    font-size: 1.5rem;
+    opacity: 1;
+    padding: 0 6px;
+  }
+  
+  .checkbox-container {
+    width: 20px;
+    height: 20px;
+    margin-right: 12px;
+  }
+  
+  .checkmark {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .checkbox-container .checkmark:after {
+    left: 5px;
+    top: 1px;
+    width: 5px;
+    height: 10px;
+  }
+
+  .user-profile-widget {
+    right: 10px;
+    gap: 8px;
+  }
+
+  .profile-pic {
+    width: 26px;
+    height: 26px;
+  }
+  
+  .logout-btn {
+    font-size: 1.2rem;
+  }
+
+  .login-journal {
+    padding: 30px 25px;
+    border-left: 10px solid var(--binding-color);
+  }
+
+  .login-title {
+    font-size: 2.4rem;
+  }
+
+  .login-subtitle {
+    font-size: 1.5rem;
+  }
+
+  .google-btn {
+    font-size: 1.2rem;
+    padding: 10px 16px;
+  }
+
+  .scroll-content {
+    padding: 20px;
+  }
+
+  .typewriter-text {
+    font-size: 1.6rem;
+    min-height: 280px;
+  }
+
+  @keyframes unroll-scroll {
+    0% { height: 0; }
+    100% { height: 550px; }
+  }
+}
